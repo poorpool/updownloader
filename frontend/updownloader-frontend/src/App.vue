@@ -1,11 +1,47 @@
 <template>
-
+  <el-dialog v-model="dialogTextVisible" title="提交文字" width="80%">
+    <el-input
+        v-model="textarea"
+        maxlength="50000"
+        placeholder="请输入文字"
+        show-word-limit
+        type="textarea"
+        rows="15"
+    />
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button type="primary">提交</el-button>
+      </span>
+    </template>
+  </el-dialog>
+  <el-dialog v-model="dialogFileVisible" title="提交文件" width="80%">
+    <el-upload
+        ref="upload"
+        class="upload-demo"
+        action="https://jsonplaceholder.typicode.com/posts/"
+        :limit="1"
+        :on-exceed="handleExceed"
+        :auto-upload="false"
+    >
+      <el-button type="primary" plain>选择文件</el-button>
+      <template #tip>
+        <div class="el-upload__tip" style="color: red">
+          仅限一个文件
+        </div>
+      </template>
+    </el-upload>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button type="primary">提交</el-button>
+      </span>
+    </template>
+  </el-dialog>
   <el-container>
     <el-header style="padding: 0;">
       <el-menu mode="horizontal" >
         <el-menu-item index="1">UPDOWNLOADER</el-menu-item>
-        <el-menu-item index="2">上传文字</el-menu-item>
-        <el-menu-item index="3">上传文件</el-menu-item>
+        <el-menu-item index="2" @click="dialogTextVisible=true">上传文字</el-menu-item>
+        <el-menu-item index="3" @click="dialogFileVisible=true">上传文件</el-menu-item>
         <el-menu-item index="4">后台</el-menu-item>
       </el-menu>
     </el-header>
@@ -53,14 +89,21 @@ export default {
     return {
       codeInput: "",
       ifShowCard: false,
-      cardTitle: ""
+      cardTitle: "",
+      textarea: "",
+      dialogTextVisible: false,
+      dialogFileVisible: false
     }
   },
   methods: {
     query() {
       this.cardTitle = this.codeInput;
       this.ifShowCard = true;
-    }
+    },
+    handleExceed(files) {
+      this.$refs.upload.clearFiles()
+      this.$refs.upload.handleStart(files[0])
+    },
   }
 }
 </script>
