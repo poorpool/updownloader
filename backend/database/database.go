@@ -1,52 +1,41 @@
 package database
 
 import (
-	"context"
 	"log"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
-var DBDatabase *mongo.Database
+var db *gorm.DB
 
 func InitDatabase() {
 	// TODO: add config.yaml
-	co := options.Client().ApplyURI("mongodb://user:123456@localhost:27017/updownloader")
+	dsn := "root:123456@tcp(127.0.0.1:3306)/updownloader?charset=utf8mb4&parseTime=True&loc=Local"
+	var err error
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
-	client, err := mongo.Connect(context.TODO(), co)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = client.Ping(context.TODO(), nil)
-	if err != nil {
-		log.Fatal(err)
+	if db.Migrator().HasTable(&Record{}) {
+		db.AutoMigrate(&Record{})
+	} else {
+		db.Migrator().CreateTable(&Record{})
 	}
 
-	DBDatabase = client.Database("updownloader")
-
-	log.Println("Connected to MongoDB!")
+	log.Println("Connected to Mysql!")
 }
 
 // TODO: 这里要用指针吗
-func InsertRecord(record Record) {
-	// TODO: 保存成全局变量？
-	collection := DBDatabase.Collection("Record")
-	_, err := collection.InsertOne(context.TODO(), record)
-	if err != nil {
-		log.Fatal(err)
-	}
+func InsertRecord(record Record) error {
+	result := db.Create(&record)
+	return result.Error
 }
 
 func QueryRecordByCode(code string) (Record, bool) {
-	collection := DBDatabase.Collection("Record")
-	findOneOpts := options.FindOne()
-	singleResult := collection.FindOne(context.TODO(), bson.M{"code": code}, findOneOpts)
-	var record Record
-	if err := singleResult.Decode(&record); err == nil {
-		return record, true
-	}
-	return Record{}, false
+	record := Record{}
+	res := db.Where("code = ?", code).First(&record).Error == nil
+	return record, res
 }

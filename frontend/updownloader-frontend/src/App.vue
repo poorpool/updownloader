@@ -10,7 +10,7 @@
     />
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary">提交</el-button>
+        <el-button type="primary" @click="submitText">提交</el-button>
       </span>
     </template>
   </el-dialog>
@@ -50,8 +50,8 @@
 
       <el-row gutter="5" justify="center" style="margin-bottom: 5px">
         <el-col :xs="18" :sm="16" :md="12" :lg="12" :xl="12">
-          <el-input v-model="codeInput" placeholder="输入六位代码"
-                    size="large" maxlength="6" minlength="6"
+          <el-input v-model="codeInput" placeholder="输入获取代码"
+                    size="large" maxlength="6"
                     @keyup.enter="query"
           />
         </el-col>
@@ -69,7 +69,8 @@
                 <!--            <el-button class="button" type="text">Operation button</el-button>-->
               </div>
             </template>
-            <div v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</div>
+            <div style="white-space: pre-wrap;">{{cardText}}</div>
+
           </el-card>
         </el-col>
       </el-row>
@@ -80,6 +81,10 @@
 </template>
 
 <script>
+
+import axios from "axios";
+import {ElMessage, ElMessageBox} from "element-plus";
+import qs from "qs";
 
 export default {
   name: 'App',
@@ -92,18 +97,51 @@ export default {
       cardTitle: "",
       textarea: "",
       dialogTextVisible: false,
-      dialogFileVisible: false
+      dialogFileVisible: false,
+      cardText: "",
+      cardKind: 1,
     }
   },
   methods: {
     query() {
-      this.cardTitle = this.codeInput;
-      this.ifShowCard = true;
+      axios.get("http://localhost:10370/updown/record/"+this.codeInput).then(({ data }) => {
+        if (data.status === 0 && data.kind === 1) {
+          this.cardTitle = this.codeInput;
+          this.cardText = data.msg;
+          this.cardKind = 1;
+          this.ifShowCard = true;
+          ElMessage.success("获取成功")
+        } else if (data.status === 0 && data.kind === 2) {
+          ElMessage.error(data.msg)
+        } else {
+          ElMessage.error(data.msg)
+        }
+      });
     },
     handleExceed(files) {
       this.$refs.upload.clearFiles()
       this.$refs.upload.handleStart(files[0])
     },
+    submitText() {
+
+      const data = { "text": this.textarea };
+      const options = {
+        method: 'POST',
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        data: qs.stringify(data),
+        url: "http://localhost:10370/updown/text"
+      };
+      axios(options).then(({ data }) => {
+        if (data.status === 0) {
+          ElMessageBox.alert('提取代码是: ' + data.msg, '确认你的提取代码', {
+            confirmButtonText: '记下来了',
+          })
+          this.dialogTextVisible = false;
+        } else {
+          ElMessage.error(data.msg);
+        }
+      });
+    }
   }
 }
 </script>

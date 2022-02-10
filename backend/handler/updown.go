@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"updownloader-backend/database"
 	"updownloader-backend/service"
 
@@ -15,6 +16,7 @@ func Ping(c *gin.Context) {
 
 func AddText(c *gin.Context) {
 	text := c.PostForm("text")
+	fmt.Println(text)
 	if l := len(text); l < 1 {
 		c.JSON(200, gin.H{
 			"status": 1,
