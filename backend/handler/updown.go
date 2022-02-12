@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"updownloader-backend/database"
 	"updownloader-backend/service"
 
@@ -14,10 +13,20 @@ func Ping(c *gin.Context) {
 	})
 }
 
+type AddTextReq struct { // TODO: 挪到其他地方
+	Text string
+}
+
 func AddText(c *gin.Context) {
-	text := c.PostForm("text")
-	fmt.Println(text)
-	if l := len(text); l < 1 {
+	var req AddTextReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(200, gin.H{
+			"status": 1,
+			"msg":    err,
+		})
+		return
+	}
+	if l := len(req.Text); l < 1 {
 		c.JSON(200, gin.H{
 			"status": 1,
 			"msg":    "Text cannot be empty",
@@ -30,7 +39,7 @@ func AddText(c *gin.Context) {
 		})
 		return
 	}
-	res, err := service.SaveText(text)
+	res, err := service.SaveText(req.Text)
 	if err == nil {
 		c.JSON(200, gin.H{
 			"status": 0,
@@ -58,9 +67,27 @@ func ReadRecord(c *gin.Context) {
 			"kind":   1,
 			"msg":    service.ReadText(code),
 		})
+	} else if record.Kind == 2 {
+		c.JSON(200, gin.H{
+			"status": 0,
+			"kind":   2,
+			"msg":    service.GetFileDownloadLink(code, record.Filename),
+		})
 	}
 }
 
 func AddFile(c *gin.Context) {
-
+	file, _ := c.FormFile("file")
+	res, err := service.SaveFile(file, c)
+	if err == nil {
+		c.JSON(200, gin.H{
+			"status": 0,
+			"msg":    res,
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"status": 1,
+			"msg":    err.Error(),
+		})
+	}
 }

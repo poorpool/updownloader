@@ -10,6 +10,7 @@ func InitRouter(g *gin.Engine) {
 	updownRouter := g.Group("/updown")
 	// rg := g.Group("/admin")
 	initUpdownRouter(updownRouter)
+	g.Static("/webserver", "/data/updownloader")
 }
 
 func initUpdownRouter(r *gin.RouterGroup) {

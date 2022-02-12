@@ -13,4 +13,7 @@ type Record struct {
 	Filename   string
 	ExpireTime time.Time
 	// path: basepath/Code/Filename
+	// for text, filename is Code.txt
+	// for file, filename is its original name
+	// TODO: go是不是有文档注释啊
 }

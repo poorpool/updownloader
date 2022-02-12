@@ -5,9 +5,14 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"mime/multipart"
 	"os"
+	"path/filepath"
 	"time"
 	"updownloader-backend/database"
+
+	"github.com/flytam/filenamify"
+	"github.com/gin-gonic/gin"
 )
 
 const chars string = "abcdefghijklmnopqrstuvwxyz0123456789"
@@ -30,6 +35,7 @@ func randId() string {
 }
 
 func HasCode(code string) bool {
+	// TODO: 这里改成数据库判定
 	_, err := os.Stat(basepath + code)
 	return err == nil
 }
@@ -43,8 +49,9 @@ func SaveText(text string) (string, error) {
 			break
 		}
 	}
+
 	if code == "" {
-		return "", errors.New("Cannot allocate code")
+		return "", errors.New("cannot allocate code")
 	}
 
 	os.Mkdir(basepath+code, os.ModePerm)
@@ -67,4 +74,47 @@ func ReadText(code string) string {
 		return ""
 	}
 	return string(b)
+}
+
+// TODO: 完善错误处理
+func SaveFile(file *multipart.FileHeader, c *gin.Context) (string, error) {
+	var code string
+	for i := 0; i < 10; i++ {
+		ret := randId()
+		if !HasCode(ret) {
+			code = ret
+			break
+		}
+	}
+
+	if code == "" {
+		return "", errors.New("cannot allocate code")
+	}
+
+	basePath := "/data/updownloader"
+	os.Mkdir(filepath.Join(basePath, code), os.ModePerm)
+	namifiedFilename, err := filenamify.Filenamify(file.Filename, filenamify.Options{})
+
+	if err != nil {
+		return "", err
+	}
+
+	err = c.SaveUploadedFile(file, filepath.Join(basePath, code, namifiedFilename))
+
+	if err != nil {
+		return "", err
+	}
+
+	database.InsertRecord(database.Record{
+		Code:       code,
+		Kind:       2,
+		Filename:   namifiedFilename,
+		ExpireTime: time.Now().Add(time.Hour * 24),
+	})
+
+	return code, nil
+}
+
+func GetFileDownloadLink(code string, filename string) string {
+	return "http://localhost:10370/webserver/" + code + "/" + filename
 }

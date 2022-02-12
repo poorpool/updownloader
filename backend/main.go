@@ -20,6 +20,8 @@ func main() {
 
 	r := gin.Default()
 
+	r.MaxMultipartMemory = 500 << 20 // 500 MiB
+
 	r.Use(middleware.Cors())
 
 	route.InitRouter(r)
