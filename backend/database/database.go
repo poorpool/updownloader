@@ -39,3 +39,7 @@ func QueryRecordByCode(code string) (Record, bool) {
 	res := db.Where("code = ?", code).First(&record).Error == nil
 	return record, res
 }
+
+func DeleteRecordByCode(code string) {
+	db.Delete(Record{}, "code = ?", code)
+}

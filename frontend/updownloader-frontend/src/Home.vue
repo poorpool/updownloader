@@ -1,4 +1,24 @@
 <template>
+  <el-dialog
+      v-model="dialogCodeVisible"
+      title="确认你的提取代码"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
+      width="80%"
+  >
+    <p>
+      你的提取代码是 <span class="show-text" style="color: #409EFF" @click="copyToClip(showCode)">{{showCode}}</span>
+    </p>
+    <p>
+      或者使用 <span class="show-text" style="color: #409EFF" @click="copyToClip('http://192.168.0.105:8080/'+showCode)">http://192.168.0.105:8080/{{showCode}}</span> 直接提取内容
+    </p>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button type="primary" @click="dialogCodeVisible = false">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
 
   <el-dialog v-model="dialogTextVisible" title="提交文字" width="80%">
     <el-input
@@ -20,7 +40,7 @@
     <el-upload
         ref="upload"
         class="upload-demo"
-        action="http://localhost:10370/updown/file"
+        action="http://192.168.0.105:10370/updown/file"
         :limit="1"
         :on-exceed="handleExceed"
         :auto-upload="false"
@@ -71,10 +91,11 @@
             <template #header>
               <div class="card-header">
                 <span>{{cardTitle}}</span>
-                <el-button class="button" type="text" v-if="cardKind===1" @click="copyToClip">复制到剪贴板</el-button>
+                <el-button class="button" type="text" v-if="cardKind===1" @click="copyToClip(cardText)">复制到剪贴板</el-button>
               </div>
             </template>
-            <div class="show-text" style="white-space: pre-wrap;">{{cardText}}</div>
+            <div class="show-text" style="white-space: pre-wrap;" v-if="cardKind===1" >{{cardText}}</div>
+            <el-link :href="cardText" target="_blank" type="primary" v-if="cardKind===2" >{{ cardText }}</el-link>
             <!--            <pre>{{cardText}}</pre>-->
           </el-card>
         </el-col>
@@ -88,7 +109,7 @@
 <script>
 
 import axios from "axios";
-import {ElMessage, ElMessageBox} from "element-plus";
+import {ElMessage} from "element-plus";
 
 export default {
   name: 'Home',
@@ -104,6 +125,8 @@ export default {
       dialogFileVisible: false,
       cardText: "",
       cardKind: 1,
+      showCode: "",
+      dialogCodeVisible: false,
     }
   },
   methods: {
@@ -138,17 +161,15 @@ export default {
         url: "/text"
       }).then(({ data }) => {
         if (data.status === 0) {
-          ElMessageBox.alert('提取代码是: ' + data.msg, '确认你的提取代码', {
-            confirmButtonText: '记下来了',
-          })
           this.dialogTextVisible = false;
+          this.showTiqudaima(data.msg);
         } else {
           ElMessage.error(data.msg);
         }
       });
     },
-    copyToClip() {
-      this.$copyText(this.cardText).then(() => {
+    copyToClip(arg) {
+      this.$copyText(arg).then(() => {
         ElMessage.success("已复制到剪贴板")
       }, function (e) {
         ElMessage.error(e)
@@ -163,14 +184,16 @@ export default {
     },
     uploadSuccess(response) {
       if (response.status === 0) {
-        ElMessageBox.alert('提取代码是: ' + response.msg, '确认你的提取代码', {
-          confirmButtonText: '记下来了',
-        })
         this.dialogFileVisible = false;
+        this.showTiqudaima(response.msg);
       } else {
         ElMessage.error(response.msg);
       }
     },
+    showTiqudaima(code) {
+      this.showCode = code;
+      this.dialogCodeVisible = true;
+    }
   },
   mounted() {
     let code = this.$route.params.code;
