@@ -91,3 +91,18 @@ func AddFile(c *gin.Context) {
 		})
 	}
 }
+
+func AllRecords(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"status":  0,
+		"records": database.GetAllRecords(),
+	})
+}
+
+func DeleteRecord(c *gin.Context) {
+	code := c.Param("code")
+	service.DeleteRecord(code)
+	c.JSON(200, gin.H{
+		"status": 0,
+	})
+}

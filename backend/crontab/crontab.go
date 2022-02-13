@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"time"
 	"updownloader-backend/database"
+	"updownloader-backend/service"
 
 	"github.com/robfig/cron"
 )
@@ -27,8 +28,7 @@ func timedDelete() {
 				fmt.Println("removed", code, "because it does not exist in database")
 			} else {
 				if record.ExpireTime.Before(time.Now()) {
-					os.RemoveAll(filepath.Join("/data/updownloader", code))
-					database.DeleteRecordByCode(code)
+					service.DeleteRecord(code)
 					fmt.Println("removed", code, "because it expired")
 				}
 			}

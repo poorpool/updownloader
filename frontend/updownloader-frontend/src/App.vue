@@ -7,7 +7,7 @@
       <router-view></router-view>
     </el-main>
     <el-footer>
-      UPDOWNLOADER Copyright © 2022-2022 poorpool | 文件、文本定期清理 | 只可用于教育、非政治用途
+      UPDOWNLOADER Copyright © 2022-2022 poorpool
     </el-footer>
   </el-container>
 </template>
@@ -24,6 +24,13 @@ export default {
 </script>
 
 <style>
+#app {
+  font-family: Noto Sans CJK SC, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+}
 .el-container {
   min-height: 100vh;
 }

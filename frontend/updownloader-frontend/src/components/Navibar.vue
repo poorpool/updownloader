@@ -1,4 +1,21 @@
 <template>
+
+  <el-dialog
+      v-model="dialogAboutVisible"
+      title="关于 UPDOWNLOADER"
+      width="80%"
+  >
+    <p>
+      随时随地，在PC、手机、云服务器上上传和下载文本或者文件。
+    </p>
+    <p>
+      项目地址 <a href="https://github.com/poorpool/updownloader" target="_blank">https://github.com/poorpool/updownloader</a>
+    </p>
+    <p>
+      上传的文件将于24小时后自动删除。本项目意在解决简单的个人同步需求，不对其中文件内容负责。本项目只得用于教育、非政治用途，不得上传违法文件。
+    </p>
+    </el-dialog>
+
   <el-dialog
       v-model="dialogCodeVisible"
       title="确认你的提取代码"
@@ -62,10 +79,11 @@
   </el-dialog>
 
   <el-menu mode="horizontal" >
-    <el-menu-item index="1">UPDOWNLOADER</el-menu-item>
+    <el-menu-item index="1" @click="this.$router.push('/')">UPDOWNLOADER</el-menu-item>
     <el-menu-item index="2" @click="dialogTextVisible=true">上传文字</el-menu-item>
     <el-menu-item index="3" @click="dialogFileVisible=true">上传文件</el-menu-item>
-    <el-menu-item index="4">后台</el-menu-item>
+    <el-menu-item index="4" @click="dialogAboutVisible=true">关于</el-menu-item>
+<!--    <el-menu-item index="4" @click="this.$router.push('/admin')">后台</el-menu-item>-->
   </el-menu>
 </template>
 
@@ -80,6 +98,7 @@
         dialogTextVisible: false,
         dialogFileVisible: false,
         dialogCodeVisible: false,
+        dialogAboutVisible: false,
         showCode: "",
         textarea: "",
       }

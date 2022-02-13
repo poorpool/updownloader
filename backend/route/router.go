@@ -18,4 +18,6 @@ func initUpdownRouter(r *gin.RouterGroup) {
 	r.POST("/file", handler.AddFile)
 	r.POST("/text", handler.AddText)
 	r.GET("/record/:code", handler.ReadRecord)
+	r.DELETE("/record/:code", handler.DeleteRecord)
+	r.GET("/all", handler.AllRecords)
 }

@@ -41,5 +41,12 @@ func QueryRecordByCode(code string) (Record, bool) {
 }
 
 func DeleteRecordByCode(code string) {
-	db.Delete(Record{}, "code = ?", code)
+	log.Println("try delete code ", code)
+	db.Delete(&Record{}, "code = ?", code)
+}
+
+func GetAllRecords() []Record {
+	var ret []Record
+	db.Find(&ret)
+	return ret
 }

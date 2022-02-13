@@ -118,3 +118,8 @@ func SaveFile(file *multipart.FileHeader, c *gin.Context) (string, error) {
 func GetFileDownloadLink(code string, filename string) string {
 	return "http://localhost:10370/webserver/" + code + "/" + filename
 }
+
+func DeleteRecord(code string) {
+	database.DeleteRecordByCode(code)
+	os.RemoveAll(filepath.Join("/data/updownloader", code))
+}
