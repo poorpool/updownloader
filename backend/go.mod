@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/flytam/filenamify v1.0.0
 	github.com/gin-gonic/gin v1.7.7
+	github.com/pelletier/go-toml v1.9.4
 	github.com/robfig/cron v1.2.0
 	gorm.io/driver/mysql v1.2.3
 	gorm.io/gorm v1.22.5

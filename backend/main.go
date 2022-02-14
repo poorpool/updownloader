@@ -2,7 +2,9 @@ package main
 
 import (
 	"math/rand"
+	"os"
 	"time"
+	"updownloader-backend/config"
 	"updownloader-backend/crontab"
 	"updownloader-backend/database"
 	"updownloader-backend/middleware"
@@ -15,6 +17,12 @@ import (
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
+
+	if len(os.Args) <= 1 {
+		config.InitConfig("conf.toml")
+	} else {
+		config.InitConfig(os.Args[1])
+	}
 
 	service.InitDir()
 
@@ -31,5 +39,5 @@ func main() {
 
 	route.InitRouter(r)
 
-	r.Run("0.0.0.0:10370") // listen and serve on 0.0.0.0:8080
+	r.Run(config.ListeningAddress())
 }

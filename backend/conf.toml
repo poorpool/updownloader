@@ -1,0 +1,3 @@
+listeningAddress="127.0.0.1:10370"
+basepath="/data/updownloader"
+dblink="root:123456@tcp(127.0.0.1:3306)/updownloader?charset=utf8mb4&parseTime=True&loc=Local"

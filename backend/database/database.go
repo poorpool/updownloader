@@ -2,6 +2,7 @@ package database
 
 import (
 	"log"
+	"updownloader-backend/config"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -10,8 +11,7 @@ import (
 var db *gorm.DB
 
 func InitDatabase() {
-	// TODO: add config.yaml
-	dsn := "root:123456@tcp(127.0.0.1:3306)/updownloader?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := config.DBLink()
 	var err error
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
@@ -28,9 +28,8 @@ func InitDatabase() {
 	log.Println("Connected to Mysql!")
 }
 
-// TODO: 这里要用指针吗
-func InsertRecord(record Record) error {
-	result := db.Create(&record)
+func InsertRecord(record *Record) error {
+	result := db.Create(record)
 	return result.Error
 }
 
@@ -41,7 +40,7 @@ func QueryRecordByCode(code string) (Record, bool) {
 }
 
 func DeleteRecordByCode(code string) {
-	log.Println("try delete code ", code)
+	log.Println("delete record by code", code)
 	db.Delete(&Record{}, "code = ?", code)
 }
 

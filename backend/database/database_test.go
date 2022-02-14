@@ -14,7 +14,7 @@ func Test_SaveRecord(t *testing.T) {
 		Filename:   "edva.txt",
 		ExpireTime: time.Now(),
 	}
-	err := InsertRecord(record)
+	err := InsertRecord(&record)
 	if err == nil {
 		t.Log("Save Record Passed")
 	} else {

@@ -1,21 +1,12 @@
 package handler
 
 import (
+	"net/http"
 	"updownloader-backend/database"
 	"updownloader-backend/service"
 
 	"github.com/gin-gonic/gin"
 )
-
-func Ping(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"msg": "pong",
-	})
-}
-
-type AddTextReq struct { // TODO: 挪到其他地方
-	Text string
-}
 
 func AddText(c *gin.Context) {
 	var req AddTextReq
@@ -105,4 +96,9 @@ func DeleteRecord(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"status": 0,
 	})
+}
+
+func Usage(c *gin.Context) {
+	c.String(http.StatusOK, `upload: curl -X POST http://THIS_SITE_ADDRESS/updown/file -F "file=@YOUR_FILE_PATH"
+query:  curl http://THIS_SITE_ADDRESS/updown/record/YOUR_CODE`)
 }

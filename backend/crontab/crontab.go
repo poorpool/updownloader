@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+	"updownloader-backend/config"
 	"updownloader-backend/database"
 	"updownloader-backend/service"
 
@@ -14,8 +15,8 @@ import (
 )
 
 func timedDelete() {
-	log.Println("try delete")
-	rd, err := ioutil.ReadDir("/data/updownloader")
+	log.Println("timed delete")
+	rd, err := ioutil.ReadDir(config.BasePath())
 	if err != nil {
 		log.Println(err)
 		return
@@ -24,7 +25,7 @@ func timedDelete() {
 		if fi.IsDir() {
 			code := fi.Name()
 			if record, exi := database.QueryRecordByCode(code); !exi {
-				os.RemoveAll(filepath.Join("/data/updownloader", code))
+				os.RemoveAll(filepath.Join(config.BasePath(), code))
 				fmt.Println("removed", code, "because it does not exist in database")
 			} else {
 				if record.ExpireTime.Before(time.Now()) {

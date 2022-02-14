@@ -14,6 +14,10 @@
     <p>
       上传的文件将于24小时后自动删除。本项目意在解决简单的个人同步需求，不对其中文件内容负责。本项目只得用于教育、非政治用途，不得上传违法文件。
     </p>
+    <pre class="show-text">
+upload: curl -X POST http://THIS_SITE_ADDRESS/updown/file -F "file=@YOUR_FILE_PATH"
+query:  curl http://THIS_SITE_ADDRESS/updown/record/YOUR_CODE
+    </pre>
     </el-dialog>
 
   <el-dialog
@@ -28,7 +32,7 @@
       你的提取代码是 <span class="show-text" style="color: #409EFF" @click="copyToClip(showCode)">{{showCode}}</span>
     </p>
     <p>
-      或者使用 <span class="show-text" style="color: #409EFF" @click="copyToClip('http://192.168.0.105:8080/'+showCode)">http://192.168.0.105:8080/{{showCode}}</span> 直接提取内容
+      或者使用 <span class="show-text" style="color: #409EFF" @click="copyToClip(frontendHost+'/'+showCode)">{{frontendHost}}/{{showCode}}</span> 直接提取内容
     </p>
     <template #footer>
       <span class="dialog-footer">
@@ -57,7 +61,7 @@
     <el-upload
         ref="upload"
         class="upload-demo"
-        action="http://192.168.0.105:10370/updown/file"
+        :action="backendBaseUrl+'/file'"
         :limit="1"
         :on-exceed="handleExceed"
         :auto-upload="false"
@@ -101,6 +105,8 @@
         dialogAboutVisible: false,
         showCode: "",
         textarea: "",
+        backendBaseUrl: axios.defaults.baseURL,
+        frontendHost: window.location.host
       }
     },
     methods: {

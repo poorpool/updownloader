@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+	"updownloader-backend/config"
 	"updownloader-backend/database"
 
 	"github.com/flytam/filenamify"
@@ -16,10 +17,9 @@ import (
 )
 
 const chars string = "abcdefghijklmnopqrstuvwxyz0123456789"
-const basepath string = "/data/updownloader/"
 
 func InitDir() {
-	if err := os.MkdirAll(basepath, os.ModePerm); err != nil {
+	if err := os.MkdirAll(config.BasePath(), os.ModePerm); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -36,7 +36,7 @@ func randId() string {
 
 func HasCode(code string) bool {
 	// TODO: 这里改成数据库判定
-	_, err := os.Stat(basepath + code)
+	_, err := os.Stat(config.BasePath() + code)
 	return err == nil
 }
 
@@ -54,12 +54,12 @@ func SaveText(text string) (string, error) {
 		return "", errors.New("cannot allocate code")
 	}
 
-	os.Mkdir(basepath+code, os.ModePerm)
+	os.Mkdir(filepath.Join(config.BasePath(), code), os.ModePerm)
 	fileName := code + ".txt"
-	f, _ := os.Create(basepath + code + "/" + fileName)
+	f, _ := os.Create(filepath.Join(config.BasePath(), code, fileName))
 	defer f.Close()
 	f.WriteString(text)
-	database.InsertRecord(database.Record{
+	database.InsertRecord(&database.Record{
 		Code:       code,
 		Kind:       1,
 		Filename:   fileName,
@@ -69,14 +69,13 @@ func SaveText(text string) (string, error) {
 }
 
 func ReadText(code string) string {
-	b, err := ioutil.ReadFile(basepath + code + "/" + code + ".txt")
+	b, err := ioutil.ReadFile(filepath.Join(config.BasePath(), code, code+".txt"))
 	if err != nil {
 		return ""
 	}
 	return string(b)
 }
 
-// TODO: 完善错误处理
 func SaveFile(file *multipart.FileHeader, c *gin.Context) (string, error) {
 	var code string
 	for i := 0; i < 10; i++ {
@@ -91,21 +90,20 @@ func SaveFile(file *multipart.FileHeader, c *gin.Context) (string, error) {
 		return "", errors.New("cannot allocate code")
 	}
 
-	basePath := "/data/updownloader"
-	os.Mkdir(filepath.Join(basePath, code), os.ModePerm)
+	os.Mkdir(filepath.Join(config.BasePath(), code), os.ModePerm)
 	namifiedFilename, err := filenamify.Filenamify(file.Filename, filenamify.Options{})
 
 	if err != nil {
 		return "", err
 	}
 
-	err = c.SaveUploadedFile(file, filepath.Join(basePath, code, namifiedFilename))
+	err = c.SaveUploadedFile(file, filepath.Join(config.BasePath(), code, namifiedFilename))
 
 	if err != nil {
 		return "", err
 	}
 
-	database.InsertRecord(database.Record{
+	database.InsertRecord(&database.Record{
 		Code:       code,
 		Kind:       2,
 		Filename:   namifiedFilename,
@@ -116,10 +114,10 @@ func SaveFile(file *multipart.FileHeader, c *gin.Context) (string, error) {
 }
 
 func GetFileDownloadLink(code string, filename string) string {
-	return "http://localhost:10370/webserver/" + code + "/" + filename
+	return "http://" + config.ListeningAddress() + "/webserver/" + code + "/" + filename
 }
 
 func DeleteRecord(code string) {
 	database.DeleteRecordByCode(code)
-	os.RemoveAll(filepath.Join("/data/updownloader", code))
+	os.RemoveAll(filepath.Join(config.BasePath(), code))
 }
