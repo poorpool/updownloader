@@ -40,6 +40,6 @@ func timedDelete() {
 func InitCron() {
 	timedDelete()
 	c := cron.New()
-	c.AddFunc("@daily", timedDelete)
+	c.AddFunc("@hourly", timedDelete)
 	c.Start()
 }

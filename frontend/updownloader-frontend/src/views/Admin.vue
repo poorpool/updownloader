@@ -5,7 +5,7 @@
                 :row-class-name="tableRowClassName">
         <el-table-column prop="code" label="提取代码">
           <template #default="scope">
-            <el-link :href="'/'+scope.row.code" target="_blank" type="primary">{{ scope.row.code }}</el-link>
+            <el-link :href="'/updown/'+scope.row.code" target="_blank" type="primary">{{ scope.row.code }}</el-link>
           </template>
         </el-table-column>
         <el-table-column prop="kind" label="文件类型"/>
@@ -29,7 +29,7 @@ export default {
   name: "Admin",
   data() {
     return {
-      tableData: []
+      tableData: [],
     }
   },
   methods: {

@@ -1,3 +1,5 @@
-listeningAddress="127.0.0.1:10370"
+listeningAddress="0.0.0.0:10370" 
+webserverAddress="127.0.0.1:10370"
 basepath="/data/updownloader"
 dblink="root:123456@tcp(127.0.0.1:3306)/updownloader?charset=utf8mb4&parseTime=True&loc=Local"
+expireHourNum=3

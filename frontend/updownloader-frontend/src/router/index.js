@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory} from "vue-router";
+//eslint-disable-next-line no-unused-vars
 import Admin from "@/views/Admin";
 
 const home = () => import("../views/Home")
@@ -22,6 +23,6 @@ const routes = [
 
 ]
 export const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(process.env.NODE_ENV === "production" ? "/updown/" : "/"),
   routes: routes
 })

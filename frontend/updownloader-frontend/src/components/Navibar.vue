@@ -12,11 +12,11 @@
       项目地址 <a href="https://github.com/poorpool/updownloader" target="_blank">https://github.com/poorpool/updownloader</a>
     </p>
     <p>
-      上传的文件将于24小时后自动删除。本项目意在解决简单的个人同步需求，不对其中文件内容负责。本项目只得用于教育、非政治用途，不得上传违法文件。
+      上传的文件将于3个小时后自动删除。本项目意在解决简单的个人同步需求，不对其中文件内容负责。本项目只得用于教育、非政治用途，不得上传违法文件。
     </p>
     <pre class="show-text">
-upload: curl -X POST http://THIS_SITE_ADDRESS/updown/file -F "file=@YOUR_FILE_PATH"
-query:  curl http://THIS_SITE_ADDRESS/updown/record/YOUR_CODE
+upload: curl -X POST http://BACKEND_ADDRESS/updown/file -F "file=@YOUR_FILE_PATH"
+query:  curl http://BACKEND_ADDRESS/updown/record/YOUR_CODE
     </pre>
     </el-dialog>
 
@@ -106,7 +106,7 @@ query:  curl http://THIS_SITE_ADDRESS/updown/record/YOUR_CODE
         showCode: "",
         textarea: "",
         backendBaseUrl: axios.defaults.baseURL,
-        frontendHost: window.location.host
+        frontendHost: window.location.host + "/updown"
       }
     },
     methods: {

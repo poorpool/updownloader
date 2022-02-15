@@ -63,7 +63,7 @@ func SaveText(text string) (string, error) {
 		Code:       code,
 		Kind:       1,
 		Filename:   fileName,
-		ExpireTime: time.Now().Add(time.Hour * 24),
+		ExpireTime: time.Now().Add(time.Hour * time.Duration(config.ExpireHourNum())),
 	})
 	return code, nil
 }
@@ -107,14 +107,14 @@ func SaveFile(file *multipart.FileHeader, c *gin.Context) (string, error) {
 		Code:       code,
 		Kind:       2,
 		Filename:   namifiedFilename,
-		ExpireTime: time.Now().Add(time.Hour * 24),
+		ExpireTime: time.Now().Add(time.Hour * time.Duration(config.ExpireHourNum())),
 	})
 
 	return code, nil
 }
 
 func GetFileDownloadLink(code string, filename string) string {
-	return "http://" + config.ListeningAddress() + "/webserver/" + code + "/" + filename
+	return "http://" + config.WebServerAddress() + "/webserver/" + code + "/" + filename
 }
 
 func DeleteRecord(code string) {
